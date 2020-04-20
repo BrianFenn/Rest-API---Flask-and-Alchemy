@@ -1,0 +1,543 @@
+Flask (in python) install flask
+SQLAlchemy (SQL Mapper) without SQL queries
+Marshmellow (serialization) pass into our schema
+		serializes and deserializes our objects
+
+Install Postman
+
+create virtual environment using pip env (and keep all of
+our dependencies in one place.
+
+
+
+similar to using NPM with NodeJS
+
+Create our Virtual Environment
+>> python --version
+
+>> pip3 install pipenv
+
+>> pipenv shell
+
+Next, we need to insall Flask, which is our Framework
+We are using sql alchemy to we add to install flask
+flask-sqlalchemy
+flask-marshmallow
+& need a package that integrates marshmallow & SQL alchemy
+
+>> pipenv install flask flask-sqlalchemy flask-marshmallow marshmallow-sqlalchemy
+
+Afterward, check your pip file you should see:
+
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+flask = "*"
+flask-sqlalchemy = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
+
+[requires]
+python_version = "3.8"
+
+Next, create a file (and another file for our database)
+e.g. "app.py"
+
+in app.py:
+
+import our dependicies
+
+"from flask import FLask, request, jsonify" (Rest API will return JSON data, which will take dictionary or dictionary array and import as JSON)
+
+"from flask_sqlalchemy import SQLAlchemy"
+
+"from flask_marshmallow import Marshmallow"
+
+"import os" (we need this to deal with file paths, and we need it to pinpoint our database file setup)
+
+"# Init app" (Our program notes)Initialize our App
+
+"app = Flask(__name__)"
+
+To run our Server:
+
+"# Run Server" (Our program notes) 
+
+"if __name__ == '__main__': " Check if __name__ is main file
+" app.run(debug=True)" Since we are in Development debug=True 
+
+Now save the file, and we should be able to run our server
+
+in Terminal:
+
+"python app.py"
+
+Since we are building a restful app, we return json data for a client
+(like a react app or a mobile app)
+
+To create a route:
+
+"@app.route('/' methods=['GET'])"  Pass in the end point "a slash mark" with a GET method
+
+Then we can create a function, 
+
+"def get" We can call it get or whatever we'd like 
+
+So, 
+
+"def get():
+   return jsonify({ 'msg': 'Hello World' })"	to return json and pass in the python dictionary
+
+Now Save.
+
+Launch Postman
+
+Get "http://localhost:5000"
+
+Output:
+
+{
+	"msg": "Hello World"
+}
+
+
+Now we remove that @app.route (it was only a demonstration on how to route our output 
+
+Next,
+
+Set-Up Our SQL Alchemy Database URI:
+
+"basedir = " This will allow us to locate our database file, right in our route, 
+		and let the server know where it is..so we will use the OS package
+
+So,
+This is our base directory
+
+"basedir = os.path.abspath(os.path.dirname(__file__))" dirname is the current folder we are in
+
+Now, we'll set-up our database:
+
+# Database
+"app.config" and set SQLAlchemy_DATABASE with [] brackets
+
+so,
+"app.config['SQLALCHEMY_DATABASE_URI'] = sqlite:/// + os.path.join()" and cocatenate on our os.path.join()
+				and locate the base director which we already created a
+				variable for, so we'll pass in basedir
+
+
+"app.config['SQLALCHEMY_DATABASE_URI'] = sqlite:/// + os.path.join(basedir)"
+
+		and the file for our database is going to be called DB. Lite okay
+
+"app.config['SQLALCHEMY_DATABASE_URI'] = sqlite:/// + os.path.join(basedir, 'db.sqlite')"
+
+So, this will look for a file called "db.sqlite" in the current folder structure (current folder that we're in)
+
+Now we'll create another "app.config[]" file that we don't need but if we don't put it in, we'll get a complaint in our console (a warning)
+
+So, we'll set our SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+Next, we'll need to initialize our database with SQL Alchemy
+
+So,
+
+#Initialize our Database (Create a variable called db and set it o SQL Alchemy, which we brought in up above)
+
+"db = SQLAlchemy(app)" And we'll pass in our "app"
+
+Now, we'll need to Initalize Marshmallow
+
+So,
+
+# Initialize Marshmallow
+
+"ma = Marshmallow(app)" set our variable to ma, and call on the "Marshmallow App"
+
+Now, everything everything has been initialized, Next we'll set up our Database File
+
+In order to do that, We'll create our Product Class.
+
+
+(Whatever resources you're going to have , whether it's a product or a blog post, or dues, or whatever,
+you will create a clas for it)
+
+So,
+
+We need to create a basic python class:
+
+"class Product(db.Model):" and pass in our DB which is our SQL Alchemy and "Model" which is a bunch of predefined methods
+
+Now we'll want to insert all of our fields:
+
+"id = db.Column(data-type, more database attribute[s])" (This is the way we'll assign fields, by using db.Column
+
+And pass in our Parameters:
+1st: our data-type,  e.g. ours will be an integer (in our example)
+2nd: Set another attribute, "primary_key" to make it our primary key
+3rd: Will be done autmatically, which is auto-increment
+
+Next we'll define another field called "name" which we'll define as a String by calling "db.String" and limit the characters to 100
+So,
+name = db.Column(db.String(100), unique=True)
+
+Now add a description field
+
+description = db.String(200) with 200 Characters limit
+
+Next, add a price field
+
+price = db.Column(db.Float)   #price we'll use a float
+
+And, we will add a quantity field
+
+qty = db.Column(db.Integer) # Using an integer for our quantity
+
+
+Now, we'll create our Constructor
+
+def __init__(self name, description, price, qty): # pass self, and this is similar to passing self in other Object Oriented languages
+		    # and we want to pass in our other data fields
+
+		    # when we pass in all these fields, we want to add them to the instance
+
+So,
+
+	self.name = name
+	self.description = description
+	self.price = price
+	self.qty = qty
+
+That's it for our class (our base product class we've created), next we would normally want to have different files
+								for these, but we're ust putting all of this in the
+								app file
+
+For reference to what we just did goto:
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/quickstart/#a-minimal-application
+
+Next, you could even take the API further and create categories for each product (with a foreign key for cateogory)
+see link above under Simple Relationships Header
+
+
+Moving to our next step.
+
+We want create a Product Schema, So:
+
+We'll create another class called Product Schema,
+
+"class ProductSchema()" #this is where we'll use Marshmallow, by passing in ma.Schema
+
+So,
+
+"class ProductSchema(ma.Schema)" and add:
+	class Meta # this is the fields that we're allowed to show
+		fields = #we'll go ahead and show everything, (including the ID)
+				# Even if we do a GET request to show, we'll show all the fields
+
+Next, we'll initialize our Schema, so:
+
+"product_schema = ProductSchema(strict=True) # and pass in an object script=True, or else we'll the app is going to give us another warning message
+
+and we'll create another Schema called:
+
+"products_schema = ProductSchema(many=True, strict=True)" 	# So we can call a list of products instead of a single product			
+								# only difference here is many=True because, we'll be calling multiple products
+	
+That's about it For Creating Our Class & Schema
+
+Next, We need to create our Routes:
+(Let's Save our work here)...
+
+Now, instructor suggested removing strict=True, because we'll run into errors
+
+Now we'll create our database...Go into Python Shell
+
+>>> from app import db'
+
+>>> db.create_all() 
+
+Now it will create our database file in Visual Studio with SQL Alchemy, (makes it real easy for us)
+
+Press Control + C to exit out of the console and return to our cmd terminal
+
+Type (enter in our python shell):
+
+Type >>> Python
+
+>>>from app import db
+
+>>>db.create_all()
+
+Now our db.sqlite file is created (our database) # we can not read this file, but we can download extensions in our Visual Studio to view it.
+
+Now we can move on to creating our routes (which is a way to create our endpoints)
+
+First,
+
+# Create a Product
+ @app.route('/product', methods=['POST'])
+ def add_product(): # attach our fields below using requests (bringing in our data that is passed in from postman, react or where-ever our data is coming from)
+     name = request.json['name'] #since it will be json data
+     description = request.json['description']
+     price = request.json['price']
+     qty = request.json['qty']
+
+
+Now create a New Product using a variable name "new_product" set to our "Product Class"
+
+	# basically we're initiating an object here...
+
+All stuff coming in from postman (or our client)
+
+Now we will add our new_product to the database
+
+"db.session.add(new_product)" # we are passing in our new_product variable (information into our database)
+
+Now to Save it to the database:
+
+"db.session.commit()"
+
+Now, we need to return the new_product information to our client in json (because our client views information in json)
+
+"return product_schema.jsonify(new_product)"
+
+Now we can run our Python App, by exiting out of our Python Shell, by typing:
+
+>>> exit()
+
+Type:
+>>> Python app.py
+
+
+Now, go to Postman
+
+Select "POST"
+
+"http://localhost:5000/product" (on port 5000, post a product to the database)
+
+Under Headers,
+
+Key "Content-Type"
+Value "application/json"
+
+Under Body,
+
+"Raw"
+
+Under Body,
+
+{
+	"name": "Product 1",
+	"description": "This is Product 1",
+	"price": 350.00,  # this is a float
+	"qty": 100
+}
+
+Now Send, should get "Status 200 OK" Green Text
+
+Good,
+
+Now we'll go into app.py and create a route to get All Products
+
+# Get All Products
+@app.route('/product', methods=['GET']) # Same route as Create a Product
+def get_products(): # create a function to get all of our products
+  all_products = Product.query.all() # create a variable to our moodel (or our class), which will have a method on it called query, then we want to get all, this will get all our products
+  result = products_schema.dump(all_products) # Now, get our result for products(since there is more than one product) so we'll use products_schema where many=True, and use the dump method to return the data
+                                              # of our variable all_products
+  return jsonify(result) # Now return our list in json using jsonify data (note: instructor advised result.data would not work, per video, so only use result object, which is our call keyword to return our result 
+                          #(which result keyword is an object in a(our) dictionary)
+
+
+
+Now, go to Postman
+
+Open a new tab, and enter GET:
+
+
+"http://localhost:5000/product"
+
+and an array [] will return our products list
+
+Now let's create a single product route & request
+
+# Get a Single Product
+@app.route('/product/<id>', methods=['GET']) #this time use the route above, but since we need a specific product, use "/" to enter a new directory path with < > brackets with the id inside it
+def get_product(id): # instead of get_products and pass our id into the function
+  product = Product.query.get(id) # just product instead of products, and we "query" with a call "get" on the "(id)"
+  # result = product_schema.dump() # we don't need this because we are not dealing with an array, we are only dealing with a single product
+  # return jsonify(result) can be combined below:
+
+  return product_schema.jsonify(product) # and combine our product_schema call to return product_schema.jsonfiy(product), since we are not using an array if for multiple products
+
+Now,
+Goto Postman
+
+In New Tab:
+Type:
+
+"http://localhost:5000/product/[input your id number here]"
+
+e.g. 
+
+"http://localhost:5000/product/2"
+
+and we should see our result with an product ID "2" posted in the Postman Body-Browser (or terminal)
+
+Next, let's create our update product function
+
+@app.route('/product/<id>', methods=['PUT']) # we need to know which ID to update, so /<id> will be the route in our product directory, and we'll use 'PUT' since we are using an Update (not POST)
+def update_product(id): # define our function as update_product() and pass in our id which will be pulled from Postman
+  product =  Product.query.get(id) # we need to first, fetch our product (that we'll update) so, we'll create a variable and set it equal to our class Product. which has a propeerty query (or property query object)
+             # that has a method called .get and pass in our id that the user enters in Postman 
+#since we'll need to get all of our fields from the body of the request, we'll keep all of this data, like we used to Create a Product
+  name = request.json['name'] # since it will be json data
+  description = request.json['description']
+  price = request.json['price']
+  qty = request.json['qty']
+
+ # Now we need to construct a new product to submit to the database
+  product.name = name
+  product.description = description
+  product.price = price
+  product.qty = qty
+
+#we don't need to add, like we did for a new product, so we can remove the code below (from our create product, b/c we just copied the create product function to save time)
+ #new_product = Product(name, description, price, qty) //#creating a new product with our Product Class, this is data coming from Postman (or Client)
+
+ # db.session.add(new_product) #we don't need to add a new product since we are just updating, so we don't need this either.
+  db.session.commit() #we still need this to commit the change to update our product
+
+# Since we are not creating a new product, we can use the script return product_schema.jsonify(product) b/c we already have our product, and we're just going to update it 
+ #return product_schema.jsonify(new_product) # to return our new_product variable (our product information) to the client, remember it will need to be sent iin json to the client
+  return product_schema.jsonify(product) #since we already have our product we use product, not calling a new_product   
+
+
+Now, Open Postman:
+
+Open New Tab:
+
+Create a PUT Request: with an update to our json data
+
+{
+	"name": "Product Two",
+	"description": "This is Product 2",
+	"price": 350.00,
+	"qty": 20
+}
+
+Click Send.  
+
+Status should be 200 OK, Green.
+
+And if you do a Get Request (to get all products):
+
+http://localhost:5000/product
+
+We should see all of our products
+
+[
+  {
+    "description": "This is Product 2",
+    "id": 1,
+    "name": "Product Two",
+    "price": 350.0,
+    "qty": 20
+  },
+  {
+    "description": "This is Product 1",
+    "id": 2,
+    "name": "Product 11",
+    "price": 350.0,
+    "qty": 100
+  },
+  {
+    "description": "This is Product 1",
+    "id": 3,
+    "name": "Product 111",
+    "price": 350.0,
+    "qty": 100
+  }
+]
+
+Now,
+
+To make this a full CRUD API (Create, Retrieve, Update, & Delete), we need to create a Delete Function
+
+
+@app.route('/product/<id>', methods=['DELETE']) #this time use the route above, but since we need a specific product, use "/" to enter a new directory path with < > brackets with the id inside it
+def delete_product(id): # create our delete function name and pass in our id that the user will enter in Postman
+  product = Product.query.get(id) # we still will need to query our product, (to know what product we need to delete)
+  
+  db.session.delete(product) # We call our db.session delete funciton with the product we plan to delete
+  db.session.commit() # we need to commit this change to our database (or else it won't happen)
+  return product_schema.jsonify(product) # now we can view in the Postman terminal the product that we are deleting, # and combine our product_schema call to return product_schema.jsonfiy(product), since we are not using an array if for multiple products
+
+# Now Open Postman
+
+In a new Tab:
+Select DELETE Request:
+Enter:
+http://localhost:5000/product/2 (or the id # you will delete)
+
+Click Send:
+
+The Item you want to delete will be displayed
+
+{
+  "description": "This is Product 1",
+  "id": 2,
+  "name": "Product 11",
+  "price": 350.0,
+  "qty": 100
+}
+
+You can check that it worked by:
+
+Opening another Tab:
+
+Select GET Request:
+
+Type:
+(To get newly updated product list, without the item you just deleted)
+http://localhost:5000/product 
+
+[
+  {
+    "description": "This is Product 2",
+    "id": 1,
+    "name": "Product Two",
+    "price": 350.0,
+    "qty": 20
+  },
+  {
+    "description": "This is Product 1",
+    "id": 3,
+    "name": "Product 111",
+    "price": 350.0,
+    "qty": 100
+  }
+]
+
+You're Done!
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
